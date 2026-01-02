@@ -1,5 +1,5 @@
-name: E2E Test
-on: [push, pull_request]
+name: "Manual build and Scan"
+on: workflow_dispatch
 
 jobs:
   e2e-test:
@@ -22,40 +22,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Use cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.npm
-            ~/.cache
-          key: ${{ runner.os }}-node${{ matrix.node-version }}-E2E-${{ hashFiles('package-lock.json') }}
-
       - name: Install dependencies
         run: |
           npm ci
           npm run cy:verify
 
-      - name: Start MongoDB
-        run: |
-          docker run -d -p 27017:27017 mongo:4.0
-          timeout 60s bash -c 'until nc -z -w 2 localhost 27017 && echo MongoDB ready; do sleep 2; done'
-
-      - name: Run E2E test suite
-        id: test-suite
-        run: |
-          NODE_ENV=test npm start -- --silent &
-          npm run test:ci -- --config video=true
-
-      - name: Prepare cypress artifacts
-        if: failure() && (steps.test-suite.outcome == 'failure')
-        working-directory: ./test/e2e
-        run: >
-          mkdir -p "screenshots" && find "screenshots" -mindepth 1 -maxdepth 1 -type d
-          -exec sh -c 'mv -- "videos/$(basename "$1").mp4" "$1"' _ {} \;
-
-      - name: Upload cypress artifacts
-        if: failure() && (steps.test-suite.outcome == 'failure')
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-artifacts-node${{ matrix.node-version }}
-          path: test/e2e/screenshots
+      -   name: OX Security Scan
+        # You may pin to the exact commit or the version.
+        # uses: oxsecurity/ox-security-scan@5113dd40ecb43b51047ccfeda629ce403687f566
+          with:
+             ox_api_key: ${{secrets.OX_API_KEY}}
+             uses: oxsecurity/ox-security-scan@main
