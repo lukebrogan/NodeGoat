@@ -2,7 +2,7 @@ name: "Manual build and Scan"
 on: workflow_dispatch
 
 jobs:
-  e2e-test:
+  build:
     name: Node.js
     runs-on: ubuntu-latest
 
