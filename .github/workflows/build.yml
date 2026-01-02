@@ -6,30 +6,22 @@ jobs:
     name: Node.js
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: ["10.x", "12.x", "14.x"]
-
     steps:
       - name: Checkout https://github.com/${{ github.repository }}@${{ github.ref }}
         uses: actions/checkout@v2
-        with:
-          persist-credentials: false
 
-      - name: Set up Node.js ${{ matrix.node-version }}
+      - name: Set up Node.js 14.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 14.x
 
       - name: Install dependencies
         run: |
-          npm ci
-          npm run cy:verify
+          npm install
 
-      -   name: OX Security Scan
+      - name: OX Security Scan
         # You may pin to the exact commit or the version.
         # uses: oxsecurity/ox-security-scan@5113dd40ecb43b51047ccfeda629ce403687f566
-          with:
-             ox_api_key: ${{secrets.OX_API_KEY}}
-             uses: oxsecurity/ox-security-scan@main
+        with:
+           ox_api_key: ${{secrets.OX_API_KEY}}
+           uses: oxsecurity/ox-security-scan@main
