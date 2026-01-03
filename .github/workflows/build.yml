@@ -18,9 +18,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: aikido-scanner
-        # You may pin to the exact commit or the version.
-        # uses: gusfune/aikido-scanner@26a22e15a650c9077d7a9f46cf4079110101a1c4
-        uses: gusfune/aikido-scanner@1.0.19
-        with:
-          api_key: ${{secrets.API_KEY}}
+      - name: Install Aikido CI API Client
+        run: npm install --global @aikidosec/ci-api-client
+          
+      - name: Run Aikido Scan
+        run: aikido-api-client scan-release ${{ github.event.repository.name }} $GITHUB_SHA --apikey ${{ secrets.AIKIDO_CLIENT_API_KEY }}
+      # Referance: https://help.aikido.dev/~/revisions/SGhJfnCIOpxRjx1gC1k5/pr-and-release-gating/cli-for-pr-and-release-gating/github-action-setup-for-aikido-cli-release-gating
