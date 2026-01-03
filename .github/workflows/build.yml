@@ -2,7 +2,7 @@ name: Aikido Release Gated Scan
 on:
   push:
     branches:
-      - main
+      - master
 jobs:
   build:
     name: Node.js
